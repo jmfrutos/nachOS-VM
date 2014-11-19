@@ -47,6 +47,10 @@
 //	"which" is the kind of exception.  The list of possible exceptions 
 //	are in machine.h.
 //----------------------------------------------------------------------
+void PageFaultHandler() {
+	int faultAddr = machine->ReadRegister(BadVAddrReg);
+	printf("PageFaultException en: %d \n",faultAddr/PageSize);
+}
 
 void
 ExceptionHandler(ExceptionType which)
@@ -56,6 +60,8 @@ ExceptionHandler(ExceptionType which)
     if ((which == SyscallException) && (type == SC_Halt)) {
 	DEBUG('a', "Shutdown, initiated by user program.\n");
    	interrupt->Halt();
+    } else if (which == PageFaultException) {
+		PageFaultHandler();
     } else {
 	printf("Unexpected user mode exception %d %d\n", which, type);
 	ASSERT(false);
